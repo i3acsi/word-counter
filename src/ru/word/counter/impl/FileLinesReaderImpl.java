@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FileLinesReaderImpl implements FileLinesReader, AutoCloseable {
+public class FileLinesReaderImpl implements FileLinesReader {
 
     private final List<Stream<String>> streams;
     private final Queue<String> queue;
