@@ -1,0 +1,17 @@
+package ru.word.counter.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ThreadUtils {
+
+    public static List<Thread> stratThreads(int threadCont, Runnable runnable) {
+        List<Thread> threads = new ArrayList<>(threadCont);
+        for (int i = 0; i < threadCont; i++) {
+            Thread thread = new Thread(runnable);
+            thread.start();
+            threads.add(thread);
+        }
+        return threads;
+    }
+}
