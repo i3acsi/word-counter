@@ -32,7 +32,7 @@ public class WordCounterImpl implements WordCounter {
     public Map<String, Long> countTopTen() {
         return wordCountMap.entrySet().stream()
                 .sorted(WORD_COUNT_COMPARATOR)
-                .limit(100)
+                .limit(10)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

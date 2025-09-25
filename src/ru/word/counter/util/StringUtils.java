@@ -24,7 +24,7 @@ public class StringUtils {
         Matcher matcher = pattern.matcher(word);
         List<String> strings = new ArrayList<>();
         while (matcher.find()){
-            strings.add(matcher.group());
+            strings.add(matcher.group().toLowerCase());
         }
         return strings;
     }

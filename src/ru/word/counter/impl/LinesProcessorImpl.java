@@ -20,6 +20,7 @@ public class LinesProcessorImpl implements LinesProcessor {
     private final List<Thread> lineThreads;
     private final List<Thread> wordThreads;
     private final Consumer<String> wordConsumer;
+    private final Supplier<String> linesSupplier;
     private final StringUtils stringUtils;
 
     private static final BlockingQueue<String> WORDS_Q = new LinkedBlockingQueue<>();
@@ -29,12 +30,13 @@ public class LinesProcessorImpl implements LinesProcessor {
                               int threadsCount, int min, int max) {
         this.wordConsumer = wordConsumer;
         this.stringUtils = new StringUtils(min, max);
-        lineThreads = ThreadUtils.stratThreads(threadsCount, () -> processLines(linesSupplier));
-        wordThreads = ThreadUtils.stratThreads(threadsCount, this::processWord);
+        this.linesSupplier = linesSupplier;
+        this.lineThreads = ThreadUtils.startThreads(threadsCount, this::startProcessLines);
+        this.wordThreads = ThreadUtils.startThreads(threadsCount, this::processWord);
 
     }
 
-    private void processLines(Supplier<String> linesSupplier) {
+    private void startProcessLines() {
         String line = linesSupplier.get();
         while (line != null) {
             Arrays.stream(line.split("[^\\p{L}]+"))
