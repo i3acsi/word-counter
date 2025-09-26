@@ -1,7 +1,7 @@
 package ru.word.counter.impl;
 
 import ru.word.counter.LinesProcessor;
-import ru.word.counter.util.StringUtils;
+import ru.word.counter.util.WordUtils;
 import ru.word.counter.util.ThreadUtils;
 
 import java.time.Duration;
@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,7 @@ public class LinesProcessorImpl implements LinesProcessor {
     private final List<Thread> wordThreads;
     private final Consumer<String> wordConsumer;
     private final Supplier<String> linesSupplier;
-    private final StringUtils stringUtils;
+    private final WordUtils wordUtils;
 
     private static final BlockingQueue<String> WORDS_Q = new LinkedBlockingQueue<>();
 
@@ -29,7 +30,7 @@ public class LinesProcessorImpl implements LinesProcessor {
                               Consumer<String> wordConsumer,
                               int threadsCount, int min, int max) {
         this.wordConsumer = wordConsumer;
-        this.stringUtils = new StringUtils(min, max);
+        this.wordUtils = new WordUtils(min, max);
         this.linesSupplier = linesSupplier;
         this.lineThreads = ThreadUtils.startThreads(threadsCount, this::startProcessLines);
         this.wordThreads = ThreadUtils.startThreads(threadsCount, this::processWord);
@@ -39,8 +40,8 @@ public class LinesProcessorImpl implements LinesProcessor {
     private void startProcessLines() {
         String line = linesSupplier.get();
         while (line != null) {
-            Arrays.stream(line.split("[^\\p{L}]+"))
-                    .map(StringUtils::trimToNull)
+            Arrays.stream(line.split("[^\\p{L}-]+"))
+                    .map(WordUtils::trimToNull)
                     .filter(Objects::nonNull)
                     .forEach(this::offer);
             line = linesSupplier.get();
@@ -50,9 +51,8 @@ public class LinesProcessorImpl implements LinesProcessor {
     private void processWord() {
         String word = poll();
         while (word != null) {
-            stringUtils.parseWords(word).stream()
-                    .filter(Objects::nonNull)
-                    .forEach(wordConsumer);
+            Optional.ofNullable(wordUtils.extractValidWord(word))
+                    .ifPresent(wordConsumer);
             word = poll();
         }
     }
