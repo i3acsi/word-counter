@@ -14,9 +14,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
+
+    private static final String TXT = ".txt";
+
     public static void main(String[] args) throws Exception {
-        int min = 0, max = 0;
-        List<String> pathNames = new ArrayList<String>();
+        int min = 0, max = 0, threads = 1;
+        List<String> pathNames = new ArrayList<>();
 
         boolean nextAnyFile = false;
         for (String arg : args) {
@@ -28,6 +31,8 @@ public class Main {
                 min = Integer.parseInt(arg.substring("--min=".length()));
             } else if (arg.startsWith("--max=")) {
                 max = Integer.parseInt(arg.substring("--max=".length()));
+            } else if (arg.startsWith("--threads=")) {
+                threads = Integer.parseInt(arg.substring("--threads=".length()));
             } else if (arg.startsWith("--files")) {
                 nextAnyFile = true;
             }
@@ -42,7 +47,7 @@ public class Main {
                     }
                 })
                 .filter(Files::isRegularFile)
-                .filter(f -> f.getFileName().toString().endsWith(".txt"))
+                .filter(f -> f.getFileName().toString().endsWith(TXT))
                 .collect(Collectors.toList());
 
         WordCounter wordCounter = new WordCounterImpl();
@@ -50,7 +55,7 @@ public class Main {
             LinesProcessor linesProcessor = new LinesProcessorImpl(
                     fileLinesReader::nextLine,
                     wordCounter::applyWord,
-                    10, min, max);
+                    threads, min, max);
             linesProcessor.processLines();
         }
         Map<String, Long> result = wordCounter.countTopTen();
