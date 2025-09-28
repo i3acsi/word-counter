@@ -3,16 +3,16 @@ package ru.word.counter.impl;
 import ru.word.counter.WordCounter;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class WordCounterImpl implements WordCounter {
 
-    private final Map<String, Long> wordCountMap;
-
     private final static Comparator<Map.Entry<String, Long>> WORD_COUNT_COMPARATOR =
             (e1, e2) -> e2.getValue().compareTo(e1.getValue());
+    private final Map<String, Long> wordCountMap;
 
     public WordCounterImpl() {
         wordCountMap = new ConcurrentHashMap<>();
@@ -33,6 +33,8 @@ public class WordCounterImpl implements WordCounter {
         return wordCountMap.entrySet().stream()
                 .sorted(WORD_COUNT_COMPARATOR)
                 .limit(10)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> {
+                    throw new RuntimeException();
+                }, LinkedHashMap::new));
     }
 }

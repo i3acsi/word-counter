@@ -2,9 +2,9 @@ package ru.word.counter.impl;
 
 import ru.word.counter.FileLinesReader;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -17,11 +17,11 @@ public class FileLinesReaderImpl implements FileLinesReader {
     private final List<Stream<String>> streams;
     private final Queue<String> queue;
 
-    public FileLinesReaderImpl(String[] fileNames) {
-        streams = new ArrayList<>(fileNames.length);
+    public FileLinesReaderImpl(List<Path> filePaths) {
+        streams = new ArrayList<>();
         try {
-            for (String fileName : fileNames) {
-                Stream<String> stringStream = Files.lines(new File(fileName).toPath());
+            for (Path file : filePaths) {
+                Stream<String> stringStream = Files.lines(file);
                 streams.add(stringStream);
             }
             queue = streams.stream()

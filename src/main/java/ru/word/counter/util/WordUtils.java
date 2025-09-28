@@ -2,8 +2,8 @@ package ru.word.counter.util;
 
 public class WordUtils {
 
-    private final String regexp;
     private static final String MINUS = "-";
+    private final String regexp;
 
     public WordUtils(int min, int max) {
         regexp = "[\\p{L}-]{" + min + "," + max + "}";
