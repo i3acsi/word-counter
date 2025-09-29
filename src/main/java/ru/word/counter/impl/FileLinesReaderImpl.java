@@ -5,42 +5,35 @@ import ru.word.counter.FileLinesReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileLinesReaderImpl implements FileLinesReader {
 
-    private final List<Stream<String>> streams;
-    private final Queue<String> queue;
+    private final Stream<String> combined;
+    private final Iterator<String> iterator;
 
     public FileLinesReaderImpl(List<Path> filePaths) {
-        streams = new ArrayList<>();
-        try {
-            for (Path file : filePaths) {
-                Stream<String> stringStream = Files.lines(file);
-                streams.add(stringStream);
-            }
-            queue = streams.stream()
-                    .reduce(Stream.empty(), Stream::concat)
-                    .collect(Collectors.toCollection(ConcurrentLinkedQueue::new));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.combined = filePaths.stream()
+                .map(path -> {
+                    try {
+                        return Files.lines(path);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .reduce(Stream.empty(), Stream::concat);
+        this.iterator = combined.iterator();
     }
 
     @Override
-    public String nextLine() {
-        return queue.poll();
+    public synchronized String nextLine() {
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     @Override
     public void close() {
-        for (Stream<?> value : streams) {
-            value.close();
-        }
+        combined.close();
     }
 }

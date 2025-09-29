@@ -10,7 +10,7 @@
 
 [source,bash]
 ----
-gradle doReadyRun; gradle clean
+gradle clean doReadyRun
 ----
 
 После успешной сборки в корневой папке проекта будет готов к запуску `jar` файл проекта
@@ -21,7 +21,7 @@ gradle doReadyRun; gradle clean
 
 [source,bash]
 ----
-java -jar text-word-counter-1.0-SNAPSHOT.jar --min=5 --max=10 --files text1.txt text2.txt data
+java -jar text-word-counter-1.0-SNAPSHOT.jar --min=5 --max=10 --threads=5 --files text1.txt text2.txt data
 ----
 
 Описание параметров:

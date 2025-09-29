@@ -1,6 +1,7 @@
 package ru.word.counter.impl;
 
 import ru.word.counter.WordCounter;
+import ru.word.counter.util.Counter;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -10,9 +11,9 @@ import java.util.stream.Collectors;
 
 public class WordCounterImpl implements WordCounter {
 
-    private final static Comparator<Map.Entry<String, Long>> WORD_COUNT_COMPARATOR =
-            (e1, e2) -> e2.getValue().compareTo(e1.getValue());
-    private final Map<String, Long> wordCountMap;
+    private final static Comparator<Map.Entry<String, Counter>> WORD_COUNT_COMPARATOR =
+            (e1, e2) -> Long.compare(e2.getValue().getCount(), e1.getValue().getCount());
+    private final Map<String, Counter> wordCountMap;
 
     public WordCounterImpl() {
         wordCountMap = new ConcurrentHashMap<>();
@@ -21,9 +22,9 @@ public class WordCounterImpl implements WordCounter {
     public void applyWord(String word) {
         wordCountMap.compute(word, (k, v) -> {
             if (v == null) {
-                return 1L;
+                return new Counter();
             } else {
-                return v + 1L;
+                return v.incrementAndGet();
             }
         });
     }
@@ -33,7 +34,7 @@ public class WordCounterImpl implements WordCounter {
         return wordCountMap.entrySet().stream()
                 .sorted(WORD_COUNT_COMPARATOR)
                 .limit(10)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> {
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getCount(), (e1, e2) -> {
                     throw new RuntimeException();
                 }, LinkedHashMap::new));
     }
