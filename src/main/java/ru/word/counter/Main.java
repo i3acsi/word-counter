@@ -1,5 +1,6 @@
 package ru.word.counter;
 
+import ru.word.counter.impl.ArgsParameters;
 import ru.word.counter.impl.FileLinesReaderImpl;
 import ru.word.counter.impl.LinesProcessorImpl;
 import ru.word.counter.impl.WordCounterImpl;
@@ -10,7 +11,7 @@ public class Main {
 
 
     public static void main(String[] args) throws Exception {
-        Parameters parameters = new Parameters(args);
+        Parameters parameters = new ArgsParameters(args);
 
         WordCounter wordCounter = new WordCounterImpl();
         try (FileLinesReader fileLinesReader = new FileLinesReaderImpl(parameters.getFilePaths())) {
