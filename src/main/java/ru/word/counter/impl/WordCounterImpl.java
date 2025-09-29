@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 public class WordCounterImpl implements WordCounter {
 
     private final static Comparator<Map.Entry<String, Counter>> WORD_COUNT_COMPARATOR =
-            (e1, e2) -> Long.compare(e2.getValue().getCount(), e1.getValue().getCount());
+            Comparator.comparingLong((Map.Entry<String, Counter> e) -> e.getValue().getCount())
+                    .reversed();
+
     private final Map<String, Counter> wordCountMap;
 
     public WordCounterImpl() {
