@@ -40,4 +40,12 @@ public class WordCounterImpl implements WordCounter {
                     throw new RuntimeException();
                 }, LinkedHashMap::new));
     }
+
+    @Override
+    public long countTotal() {
+        return wordCountMap.values().stream()
+                .mapToLong(Counter::getCount)
+                .reduce(0L, Long::sum);
+
+    }
 }

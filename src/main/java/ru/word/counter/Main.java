@@ -25,7 +25,9 @@ public class Main {
         Map<String, Long> result = wordCounter.countTopTen();
         System.out.println(result);
 
-        if (parameters.getShowDuration()) {
+        if (parameters.showStatistics()) {
+            System.out.printf("Total parsed words: %d.%n",
+                    wordCounter.countTotal());
             System.out.printf("Total time for parsing: %d milliseconds.%n",
                     System.currentTimeMillis() - start);
 

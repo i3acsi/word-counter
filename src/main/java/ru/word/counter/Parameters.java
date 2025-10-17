@@ -12,5 +12,5 @@ public interface Parameters {
 
     List<Path> getFilePaths();
 
-    boolean getShowDuration();
+    boolean showStatistics();
 }
