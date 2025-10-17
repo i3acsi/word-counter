@@ -5,11 +5,13 @@ import ru.word.counter.util.ThreadUtils;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class LinesProcessorImpl implements LinesProcessor {
 
@@ -36,10 +38,12 @@ public class LinesProcessorImpl implements LinesProcessor {
     private void startProcessLines() {
         String line = linesSupplier.get();
         while (line != null) {
+            line = format(line);
             PATTERN
                     .matcher(line)
                     .results()
                     .map(MatchResult::group)
+                    .flatMap(LinesProcessorImpl::split)
                     .map(s -> strip(s, MINUS))
                     .filter(f -> (f.length() >= min && f.length() <= max))
                     .map(String::toLowerCase)
@@ -59,6 +63,34 @@ public class LinesProcessorImpl implements LinesProcessor {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+    }
+
+    private static Stream<String> split(String s) {
+        if (s.contains("--")){
+            return Arrays.stream(s.split("-{2,}"));
+        } else {
+            return Stream.of(s);
+        }
+    }
+
+    private static String format(String s) {
+        int pos = s.indexOf('—');
+        if (pos == -1) {
+            return s;
+        }
+
+        StringBuilder sb = new StringBuilder(s.length());
+        int lastPos = 0;
+
+        while (pos != -1) {
+            sb.append(s, lastPos, pos);
+            sb.append('-');
+            lastPos = pos + 1;
+            pos = s.indexOf('—', lastPos);
+        }
+        sb.append(s, lastPos, s.length());
+
+        return sb.toString();
     }
 
     private String strip(String text, char sym) {

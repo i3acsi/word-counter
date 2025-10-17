@@ -1,5 +1,6 @@
 package ru.word.counter.util;
 
+import java.lang.Runnable;
 import java.util.ArrayList;
 import java.util.List;
 

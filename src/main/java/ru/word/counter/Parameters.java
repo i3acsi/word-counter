@@ -11,4 +11,6 @@ public interface Parameters {
     int getThreads();
 
     List<Path> getFilePaths();
+
+    boolean getShowDuration();
 }

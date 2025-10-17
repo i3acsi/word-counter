@@ -1,6 +1,7 @@
 package ru.word.counter.impl;
 
 import ru.word.counter.Parameters;
+import ru.word.counter.util.BooleanUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +14,7 @@ public class ArgsParameters implements Parameters {
 
     private static final String TXT = ".txt";
 
+    private boolean showDuration = false;
     private int min = 0;
     private int max = 0;
     private int threads = 1;
@@ -33,6 +35,8 @@ public class ArgsParameters implements Parameters {
                 this.max = Integer.parseInt(arg.substring("--max=".length()));
             } else if (arg.startsWith("--threads=")) {
                 this.threads = Integer.parseInt(arg.substring("--threads=".length()));
+            } else if (arg.startsWith("--duration=")) {
+                this.showDuration = BooleanUtils.parseBoolean(arg.substring("--duration=".length()));
             } else if (arg.startsWith("--files")) {
                 nextAnyFile = true;
             }
@@ -70,5 +74,10 @@ public class ArgsParameters implements Parameters {
     @Override
     public List<Path> getFilePaths() {
         return filePaths;
+    }
+
+    @Override
+    public boolean getShowDuration() {
+        return showDuration;
     }
 }
