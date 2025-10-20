@@ -1,7 +1,6 @@
 package ru.word.counter.impl;
 
 import ru.word.counter.Parameters;
-import ru.word.counter.util.BooleanUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,8 +34,8 @@ public class ArgsParameters implements Parameters {
                 this.max = Integer.parseInt(arg.substring("--max=".length()));
             } else if (arg.startsWith("--threads=")) {
                 this.threads = Integer.parseInt(arg.substring("--threads=".length()));
-            } else if (arg.startsWith("--stats=")) {
-                this.showDuration = BooleanUtils.parseBoolean(arg.substring("--stats=".length()));
+            } else if (arg.startsWith("--stats")) {
+                this.showDuration = true;
             } else if (arg.startsWith("--files")) {
                 nextAnyFile = true;
             }
